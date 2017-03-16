@@ -92,7 +92,6 @@ class ORMTranslationAdmin extends TranslationAdmin
                         'required'    => true,
                         'multiple'    => false,
                         'expanded'    => false,
-                        'empty_value' => 'all',
                         'empty_data'  => 'all'
                     ),
                     'field_type'    => 'choice',
