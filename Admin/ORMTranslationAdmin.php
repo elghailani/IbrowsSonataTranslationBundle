@@ -9,7 +9,6 @@ use Sonata\DoctrineORMAdminBundle\Datagrid\ProxyQuery;
 
 class ORMTranslationAdmin extends TranslationAdmin
 {
-
     protected function configureDatagridFilters(DatagridMapper $filter)
     {
         /** @var \Doctrine\ORM\EntityManager $em */
@@ -54,8 +53,7 @@ class ORMTranslationAdmin extends TranslationAdmin
             ->add(
                 'show_non_translated_only',
                 'doctrine_orm_callback',
-                array
-                (
+                array(
                     'callback'      => function (ProxyQuery $queryBuilder, $alias, $field, $options) {
                         /* @var $queryBuilder \Doctrine\ORM\QueryBuilder */
                         if (!isset($options['value']) || empty($options['value']) || false === $options['value']) {
@@ -64,7 +62,13 @@ class ORMTranslationAdmin extends TranslationAdmin
                         $this->joinTranslations($queryBuilder, $alias);
 
                         foreach ($this->getEmptyFieldPrefixes() as $prefix) {
+                            dump($prefix);
                             if (empty($prefix)) {
+                                dump($queryBuilder);
+                                $queryBuilder->orWhere('translations.content LIKE :empty')->setParameter(
+                                    'empty',
+                                    ''
+                                );
                                 $queryBuilder->orWhere('translations.content IS NULL');
                             } else {
                                 $queryBuilder->orWhere('translations.content LIKE :content')->setParameter(
@@ -72,7 +76,6 @@ class ORMTranslationAdmin extends TranslationAdmin
                                     $prefix . '%'
                                 );
                             }
-
                         }
                     },
                     'field_options' => array(
@@ -80,9 +83,12 @@ class ORMTranslationAdmin extends TranslationAdmin
                         'value'    => $this->getNonTranslatedOnly(),
                     ),
                     'field_type'    => 'checkbox',
+                      'show_filter' => true
                 )
             )
-            ->add('key', 'doctrine_orm_string')
+            ->add('key', 'doctrine_orm_string', array(
+            'show_filter' => true
+        ))
             ->add(
                 'domain',
                 'doctrine_orm_choice',
@@ -100,8 +106,7 @@ class ORMTranslationAdmin extends TranslationAdmin
             ->add(
                 'content',
                 'doctrine_orm_callback',
-                array
-                (
+                array(
                     'callback'   => function (ProxyQuery $queryBuilder, $alias, $field, $options) {
                         /* @var $queryBuilder \Doctrine\ORM\QueryBuilder */
                         if (!isset($options['value']) || empty($options['value'])) {
@@ -115,6 +120,7 @@ class ORMTranslationAdmin extends TranslationAdmin
                     },
                     'field_type' => 'text',
                     'label'      => 'content',
+                      'show_filter' => true
                 )
             );
     }

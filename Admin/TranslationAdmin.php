@@ -109,20 +109,20 @@ abstract class TranslationAdmin extends Admin
     /**
      * @return array
      */
-    public function getFilterParameters()
-    {
-        $this->datagridValues = array_merge(
-            array(
-                'domain' => array(
-                    'value' => $this->getDefaultDomain(),
-                ),
-            ),
-            $this->datagridValues
-
-        );
-
-        return parent::getFilterParameters();
-    }
+    // public function getFilterParameters()
+    // {
+    //     $this->datagridValues = array_merge(
+    //         array(
+    //             'domain' => array(
+    //                 'value' => $this->getDefaultDomain(),
+    //             ),
+    //         ),
+    //         $this->datagridValues
+    //
+    //     );
+    //
+    //     return parent::getFilterParameters();
+    // }
 
     /**
      * @param unknown $name
