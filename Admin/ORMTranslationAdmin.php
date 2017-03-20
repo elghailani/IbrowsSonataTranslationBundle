@@ -70,6 +70,8 @@ class ORMTranslationAdmin extends TranslationAdmin
                                     ''
                                 );
                                 $queryBuilder->orWhere('translations.content IS NULL');
+                                $queryBuilder->orWhere('translations.content LIKE o.key');
+                                ;
                             } else {
                                 $queryBuilder->orWhere('translations.content LIKE :content')->setParameter(
                                     'content',
