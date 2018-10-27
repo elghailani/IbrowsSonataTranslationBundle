@@ -166,10 +166,30 @@ abstract class TranslationAdmin extends AbstractAdmin
      */
     protected function configureListFields(ListMapper $list)
     {
+        // check if in opbundle for more information.
+        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
+
+        #https://stackoverflow.com/questions/21615374/how-do-i-check-for-the-existence-of-a-bundle-in-twig
+        $isEntity = !$em->getMetadataFactory()->isTransient('OnePx\BaseBundle\Entity\I18N\LexikHelper');
+
+
+
         $list
             ->add('id', 'integer')
             ->add('key', 'string')
             ->add('domain', 'string');
+
+        if ($isEntity == true) {
+            $list->add(
+                'opxHelper',
+                'string',
+                array(
+                    'mapped' => false,
+                    'sortable' => false,
+                    'template' => 'OnePxBaseBundle:sonataAdmin:customListFields/lexik.helper.html.twig',
+                )
+            );
+        }
 
         $localesToShow = count($this->filterLocales) > 0 ? $this->filterLocales : $this->managedLocales;
 

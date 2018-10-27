@@ -62,9 +62,7 @@ class ORMTranslationAdmin extends TranslationAdmin
                         $this->joinTranslations($queryBuilder, $alias);
 
                         foreach ($this->getEmptyFieldPrefixes() as $prefix) {
-                            dump($prefix);
                             if (empty($prefix)) {
-                                dump($queryBuilder);
                                 $queryBuilder->orWhere('translations.content LIKE :empty')->setParameter(
                                     'empty',
                                     ''
