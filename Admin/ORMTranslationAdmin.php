@@ -19,9 +19,9 @@ class ORMTranslationAdmin extends TranslationAdmin
 
         $domains = array();
         $domainsQueryResult = $em->createQueryBuilder()
-            ->select('DISTINCT t.domain')->from('\Lexik\Bundle\TranslationBundle\Entity\File', 't')
-            ->getQuery()
-            ->getResult(Query::HYDRATE_ARRAY);
+                                 ->select('DISTINCT t.domain')->from('\Lexik\Bundle\TranslationBundle\Entity\File', 't')
+                                 ->getQuery()
+                                 ->getResult(Query::HYDRATE_ARRAY);
 
         array_walk_recursive(
             $domainsQueryResult,
@@ -48,7 +48,7 @@ class ORMTranslationAdmin extends TranslationAdmin
                         'choices'  => $this->formatLocales($this->managedLocales),
                         'required' => false,
                         'multiple' => true,
-                        'expanded' => false
+                        'expanded' => false,
                     ),
                     'field_type'    => ChoiceType::class,
                 )
@@ -76,22 +76,22 @@ class ORMTranslationAdmin extends TranslationAdmin
                             } else {
                                 $queryBuilder->orWhere('translations.content LIKE :content')->setParameter(
                                     'content',
-                                    $prefix . '%'
+                                    $prefix.'%'
                                 );
                             }
                         }
                     },
                     'field_options' => array(
                         'required' => true,
-                        'value'    => $this->getNonTranslatedOnly(),
+                        'value'    => 1,
                     ),
                     'field_type'    => CheckboxType::class,
-                      'show_filter' => true
+                    'show_filter' => true,
                 )
             )
             ->add('key', 'doctrine_orm_string', array(
-            'show_filter' => true
-        ))
+                'show_filter' => true,
+            ))
             ->add(
                 'domain',
                 'doctrine_orm_choice',
@@ -101,7 +101,7 @@ class ORMTranslationAdmin extends TranslationAdmin
                         'required'    => true,
                         'multiple'    => false,
                         'expanded'    => false,
-                        'empty_data'  => 'all'
+                        'empty_data'  => 'all',
                     ),
                     'field_type'    => ChoiceType::class,
                 )
@@ -118,12 +118,12 @@ class ORMTranslationAdmin extends TranslationAdmin
                         $this->joinTranslations($queryBuilder, $alias);
                         $queryBuilder->andWhere('translations.content LIKE :content')->setParameter(
                             'content',
-                            '%' . $options['value'] . '%'
+                            '%'.$options['value'].'%'
                         );
                     },
                     'field_type' => TextType::class,
                     'label'      => 'content',
-                      'show_filter' => true
+                    'show_filter' => true,
                 )
             );
     }

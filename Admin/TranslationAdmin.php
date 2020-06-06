@@ -81,15 +81,6 @@ abstract class TranslationAdmin extends AbstractAdmin
         return $this->defaultSelections;
     }
 
-
-    /**
-     * @return array
-     */
-    public function getNonTranslatedOnly()
-    {
-        return array_key_exists('nonTranslatedOnly', $this->getDefaultSelections()) && (bool) $this->defaultSelections['nonTranslatedOnly'];
-    }
-
     /**
      * @param array $selections
      */
@@ -118,15 +109,14 @@ abstract class TranslationAdmin extends AbstractAdmin
                 ),
             ),
             $this->datagridValues
-
         );
 
         return parent::getFilterParameters();
     }
 
-
     /**
      * @param unknown $name
+     *
      * @return multitype:|NULL
      */
     public function getTemplate($name)
@@ -144,6 +134,7 @@ abstract class TranslationAdmin extends AbstractAdmin
 
     /**
      * @param string $name
+     *
      * @return string
      */
     public function getOriginalTemplate($name)
@@ -169,10 +160,8 @@ abstract class TranslationAdmin extends AbstractAdmin
         // check if in opbundle for more information.
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
 
-        #https://stackoverflow.com/questions/21615374/how-do-i-check-for-the-existence-of-a-bundle-in-twig
+        // https://stackoverflow.com/questions/21615374/how-do-i-check-for-the-existence-of-a-bundle-in-twig
         $isEntity = !$em->getMetadataFactory()->isTransient('OnePx\BaseBundle\Entity\I18N\LexikHelper');
-
-
 
         $list
             ->add('id', 'integer')

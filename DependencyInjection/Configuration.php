@@ -25,7 +25,7 @@ class Configuration implements ConfigurationInterface
 
         return $treeBuilder;
     }
-    
+
     protected function addEditableSection(ArrayNodeDefinition $node)
     {
         $node
