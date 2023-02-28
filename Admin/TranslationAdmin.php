@@ -2,7 +2,7 @@
 
 namespace Ibrows\SonataTranslationBundle\Admin;
 
-use Sonata\AdminBundle\Route\RouteCollection;
+use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Lexik\Bundle\TranslationBundle\Manager\TransUnitManagerInterface;
 use Sonata\AdminBundle\Model\ModelManagerInterface;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -101,19 +101,19 @@ abstract class TranslationAdmin extends AbstractAdmin
     /**
      * @return array
      */
-    public function getFilterParameters()
-    {
-        $this->datagridValues = array_merge(
-            array(
-                'domain' => array(
-                    'value' => $this->getDefaultDomain(),
-                ),
-            ),
-            $this->datagridValues
-        );
+    // public function getFilterParameters()
+    // {
+    //     $this->datagridValues = array_merge(
+    //         array(
+    //             'domain' => array(
+    //                 'value' => $this->getDefaultDomain(),
+    //             ),
+    //         ),
+    //         $this->datagridValues
+    //     );
 
-        return parent::getFilterParameters();
-    }
+    //     return parent::getFilterParameters();
+    // }
 
     /**
      * @param unknown $name
@@ -146,7 +146,8 @@ abstract class TranslationAdmin extends AbstractAdmin
     /**
      * @param RouteCollection $collection
      */
-    protected function configureRoutes(RouteCollection $collection)
+    protected function configureRoutes(RouteCollectionInterface $collection): void
+
     {
         $collection
             ->add('clear_cache')
@@ -156,7 +157,7 @@ abstract class TranslationAdmin extends AbstractAdmin
     /**
      * @param ListMapper $list
      */
-    protected function configureListFields(ListMapper $list)
+    protected function configureListFields(ListMapper $list): void
     {
         // check if in opbundle for more information.
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
@@ -216,7 +217,7 @@ abstract class TranslationAdmin extends AbstractAdmin
     /**
      * @param FormMapper $form
      */
-    protected function configureFormFields(FormMapper $form)
+    protected function configureFormFields(FormMapper $form): void
     {
         $subject = $this->getSubject();
 
@@ -248,7 +249,7 @@ abstract class TranslationAdmin extends AbstractAdmin
     /**
      * {@inheritdoc}
      */
-    public function getBatchActions()
+   protected function configureBatchActions(array $actions): array
     {
         $actions = parent::getBatchActions();
         $actions['download'] = array(
