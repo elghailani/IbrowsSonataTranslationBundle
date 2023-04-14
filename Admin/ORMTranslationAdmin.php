@@ -6,20 +6,22 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\DoctrineORMAdminBundle\Datagrid\ProxyQuery;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class ORMTranslationAdmin extends TranslationAdmin
 {
-
-    protected function configureDatagridFilters(DatagridMapper $filter)
+    protected function configureDatagridFilters(DatagridMapper $filter): void
     {
         /** @var \Doctrine\ORM\EntityManager $em */
         $em = $this->getContainer()->get('doctrine')->getManagerForClass('Lexik\Bundle\TranslationBundle\Entity\File');
 
         $domains = array();
         $domainsQueryResult = $em->createQueryBuilder()
-            ->select('DISTINCT t.domain')->from('\Lexik\Bundle\TranslationBundle\Entity\File', 't')
-            ->getQuery()
-            ->getResult(Query::HYDRATE_ARRAY);
+                                 ->select('DISTINCT t.domain')->from('\Lexik\Bundle\TranslationBundle\Entity\File', 't')
+                                 ->getQuery()
+                                 ->getResult(Query::HYDRATE_ARRAY);
 
         array_walk_recursive(
             $domainsQueryResult,
@@ -46,16 +48,15 @@ class ORMTranslationAdmin extends TranslationAdmin
                         'choices'  => $this->formatLocales($this->managedLocales),
                         'required' => false,
                         'multiple' => true,
-                        'expanded' => false
+                        'expanded' => false,
                     ),
-                    'field_type'    => 'choice',
+                    'field_type'    => ChoiceType::class,
                 )
             )
             ->add(
                 'show_non_translated_only',
                 'doctrine_orm_callback',
-                array
-                (
+                array(
                     'callback'      => function (ProxyQuery $queryBuilder, $alias, $field, $options) {
                         /* @var $queryBuilder \Doctrine\ORM\QueryBuilder */
                         if (!isset($options['value']) || empty($options['value']) || false === $options['value']) {
@@ -65,24 +66,32 @@ class ORMTranslationAdmin extends TranslationAdmin
 
                         foreach ($this->getEmptyFieldPrefixes() as $prefix) {
                             if (empty($prefix)) {
+                                $queryBuilder->orWhere('translations.content LIKE :empty')->setParameter(
+                                    'empty',
+                                    ''
+                                );
                                 $queryBuilder->orWhere('translations.content IS NULL');
+                                $queryBuilder->orWhere('translations.content LIKE o.key');
+                                ;
                             } else {
                                 $queryBuilder->orWhere('translations.content LIKE :content')->setParameter(
                                     'content',
-                                    $prefix . '%'
+                                    $prefix.'%'
                                 );
                             }
-
                         }
                     },
                     'field_options' => array(
                         'required' => true,
-                        'value'    => $this->getNonTranslatedOnly(),
+                        'value'    => 1,
                     ),
-                    'field_type'    => 'checkbox',
+                    'field_type'    => CheckboxType::class,
+                    'show_filter' => true,
                 )
             )
-            ->add('key', 'doctrine_orm_string')
+            ->add('key', 'doctrine_orm_string', array(
+                'show_filter' => true,
+            ))
             ->add(
                 'domain',
                 'doctrine_orm_choice',
@@ -92,17 +101,15 @@ class ORMTranslationAdmin extends TranslationAdmin
                         'required'    => true,
                         'multiple'    => false,
                         'expanded'    => false,
-                        'empty_value' => 'all',
-                        'empty_data'  => 'all'
+                        'empty_data'  => 'all',
                     ),
-                    'field_type'    => 'choice',
+                    'field_type'    => ChoiceType::class,
                 )
             )
             ->add(
                 'content',
                 'doctrine_orm_callback',
-                array
-                (
+                array(
                     'callback'   => function (ProxyQuery $queryBuilder, $alias, $field, $options) {
                         /* @var $queryBuilder \Doctrine\ORM\QueryBuilder */
                         if (!isset($options['value']) || empty($options['value'])) {
@@ -111,11 +118,12 @@ class ORMTranslationAdmin extends TranslationAdmin
                         $this->joinTranslations($queryBuilder, $alias);
                         $queryBuilder->andWhere('translations.content LIKE :content')->setParameter(
                             'content',
-                            '%' . $options['value'] . '%'
+                            '%'.$options['value'].'%'
                         );
                     },
-                    'field_type' => 'text',
+                    'field_type' => TextType::class,
                     'label'      => 'content',
+                    'show_filter' => true,
                 )
             );
     }

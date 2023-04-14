@@ -1,7 +1,8 @@
 # SonataTranslationBundle
 
 
-The SonataTranslationBundle is an integration of the LexikTranslationBundle into the SonataAdminBundle.
+The SonataTranslationBundle is an integration of the LexikTranslationBundle into the SonataAdminBundle.  
+### This Fork is heavly based on original one, except composer packages versions
 
 ![image](https://raw.github.com/ibrows/IbrowsSonataTranslationBundle/master/Resources/doc/screen/overview.png)
 
@@ -12,7 +13,7 @@ Add the following lines in your composer.json:
 ```
 {
     "require": {
-		"ibrows/sonata-translation-bundle" : "dev-master",
+		"ibrows/sonata-translation-bundle" : "dev-sf5",
     }
 }
 ```
@@ -38,7 +39,7 @@ public function registerBundles()
 #### SonataTranslationBundle
 No initial configuration is necessary.
 
-However there are some options you can configure in order to edit the look. Below the default configuration is shown:
+However, there are some options you can configure in order to edit the look. Below the default configuration is shown:
 
 ```
 # app/config/config.yml

@@ -2,15 +2,16 @@
 
 namespace Ibrows\SonataTranslationBundle\Admin;
 
-use Sonata\AdminBundle\Route\RouteCollection;
+use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Lexik\Bundle\TranslationBundle\Manager\TransUnitManagerInterface;
 use Sonata\AdminBundle\Model\ModelManagerInterface;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Admin\Admin;
+use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
-abstract class TranslationAdmin extends Admin
+abstract class TranslationAdmin extends AbstractAdmin
 {
     /**
      * @var TransUnitManagerInterface
@@ -81,15 +82,6 @@ abstract class TranslationAdmin extends Admin
         return $this->defaultSelections;
     }
 
-
-    /**
-     * @return array
-     */
-    public function getNonTranslatedOnly()
-    {
-        return array_key_exists('nonTranslatedOnly', $this->getDefaultSelections()) && (bool) $this->defaultSelections['nonTranslatedOnly'];
-    }
-
     /**
      * @param array $selections
      */
@@ -109,23 +101,23 @@ abstract class TranslationAdmin extends Admin
     /**
      * @return array
      */
-    public function getFilterParameters()
-    {
-        $this->datagridValues = array_merge(
-            array(
-                'domain' => array(
-                    'value' => $this->getDefaultDomain(),
-                ),
-            ),
-            $this->datagridValues
+    // public function getFilterParameters()
+    // {
+    //     $this->datagridValues = array_merge(
+    //         array(
+    //             'domain' => array(
+    //                 'value' => $this->getDefaultDomain(),
+    //             ),
+    //         ),
+    //         $this->datagridValues
+    //     );
 
-        );
-
-        return parent::getFilterParameters();
-    }
+    //     return parent::getFilterParameters();
+    // }
 
     /**
      * @param unknown $name
+     *
      * @return multitype:|NULL
      */
     public function getTemplate($name)
@@ -143,6 +135,7 @@ abstract class TranslationAdmin extends Admin
 
     /**
      * @param string $name
+     *
      * @return string
      */
     public function getOriginalTemplate($name)
@@ -153,7 +146,8 @@ abstract class TranslationAdmin extends Admin
     /**
      * @param RouteCollection $collection
      */
-    protected function configureRoutes(RouteCollection $collection)
+    protected function configureRoutes(RouteCollectionInterface $collection): void
+
     {
         $collection
             ->add('clear_cache')
@@ -163,12 +157,30 @@ abstract class TranslationAdmin extends Admin
     /**
      * @param ListMapper $list
      */
-    protected function configureListFields(ListMapper $list)
+    protected function configureListFields(ListMapper $list): void
     {
+        // check if in opbundle for more information.
+        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
+
+        // https://stackoverflow.com/questions/21615374/how-do-i-check-for-the-existence-of-a-bundle-in-twig
+        $isEntity = !$em->getMetadataFactory()->isTransient('OnePx\BaseBundle\Entity\I18N\LexikHelper');
+
         $list
             ->add('id', 'integer')
             ->add('key', 'string')
             ->add('domain', 'string');
+
+        if ($isEntity == true) {
+            $list->add(
+                'opxHelper',
+                'string',
+                array(
+                    'mapped' => false,
+                    'sortable' => false,
+                    'template' => 'OnePxBaseBundle:sonataAdmin:customListFields/lexik.helper.html.twig',
+                )
+            );
+        }
 
         $localesToShow = count($this->filterLocales) > 0 ? $this->filterLocales : $this->managedLocales;
 
@@ -205,7 +217,7 @@ abstract class TranslationAdmin extends Admin
     /**
      * @param FormMapper $form
      */
-    protected function configureFormFields(FormMapper $form)
+    protected function configureFormFields(FormMapper $form): void
     {
         $subject = $this->getSubject();
 
@@ -214,8 +226,8 @@ abstract class TranslationAdmin extends Admin
         }
 
         $form
-            ->add('key', 'text')
-            ->add('domain', 'text');
+            ->add('key', TextType::class)
+            ->add('domain', TextType::class);
     }
 
     /**
@@ -237,7 +249,7 @@ abstract class TranslationAdmin extends Admin
     /**
      * {@inheritdoc}
      */
-    public function getBatchActions()
+   protected function configureBatchActions(array $actions): array
     {
         $actions = parent::getBatchActions();
         $actions['download'] = array(

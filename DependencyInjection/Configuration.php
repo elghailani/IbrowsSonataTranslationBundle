@@ -18,17 +18,8 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('ibrows_sonata_translation');
-
-        $this->addEditableSection($rootNode);
-
-        return $treeBuilder;
-    }
-    
-    protected function addEditableSection(ArrayNodeDefinition $node)
-    {
-        $node
+        $treeBuilder = new TreeBuilder('ibrows_sonata_translation');
+        $rootNode = $treeBuilder->getRootNode()
             ->children()
                 ->scalarNode('defaultDomain')->defaultValue('messages')->end()
                 ->arrayNode('defaultSelections')
@@ -52,5 +43,6 @@ class Configuration implements ConfigurationInterface
                 ->end()
             ->end()
         ;
+        return $treeBuilder;
     }
 }
